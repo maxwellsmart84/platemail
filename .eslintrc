@@ -1,0 +1,10 @@
+{
+  "env": {
+    "node": true
+  },
+  "extends": "airbnb-base",
+  "ecmaFeatures": {
+    "ecmaScript": 8,
+    "modules": true
+  }
+}
