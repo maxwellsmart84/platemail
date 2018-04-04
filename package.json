@@ -5,6 +5,8 @@
   "main": "index.js",
   "author": "Maxwell Krause",
   "license": "ISC",
+  "preferGlobal": true,
+  "bin": "lib/index.js",
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.40",
     "@babel/core": "^7.0.0-beta.40",
@@ -21,12 +23,17 @@
     "nodemon": "^1.17.1"
   },
   "dependencies": {
-    "commander": "^2.15.1"
+    "commander": "^2.15.1",
+    "inquirer": "^5.2.0",
+    "request": "^2.85.0",
+    "request-promise": "^4.2.2",
+    "shelljs": "^0.8.1"
   },
   "scripts": {
     "test": "mocha --require ./babelPolyfill.js test/test.js",
     "clean": "rm -rf lib",
-    "start": "nodemon --exec babel-node src/serve.js",
+    "dev": "nodemon --exec babel-node index.js",
+    "start": "node ./lib/index.js",
     "build": "node_modules/.bin/babel src --out-dir lib --copy-files --source-maps"
   }
 }

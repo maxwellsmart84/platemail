@@ -6,5 +6,8 @@
   "ecmaFeatures": {
     "ecmaScript": 8,
     "modules": true
+  },
+  "rules": {
+    "no-use-before-define": [ 2, { "functions": false } ]
   }
 }
