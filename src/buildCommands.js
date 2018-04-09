@@ -13,12 +13,18 @@ import inquirer from 'inquirer';
 //
 
 
-export default async function buildPackage(opts = {}) {
-  console.log('GETTING HERRE');
+export default async function buildPackage(dir = './', options) {
+  const { nodeExpress, nodeSql, nodeNosql, nodeCli, } = options;
+  let repo = '';
+  if (nodeExpress) repo = '';
+  if (nodeSql) repo = '';
+  if (nodeNosql) repo = '';
+  if (nodeCli) repo = '';
+
   if (!sh.which(git)) {
     console.log('Sorry, this program requires git, go here for more information https://git-scm.com/book/en/v2/Getting-Started-Installing-Git');
   }
-  console.log(opts);
+  console.log(opts, dir);
   const answers = await promptUserInformation();
   console.log(answers);
   // if (opts.type === 'node.express') {
