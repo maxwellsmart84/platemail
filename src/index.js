@@ -2,6 +2,8 @@
 import program from 'commander';
 import { buildPackage } from './buildCommands';
 
+console.log(buildPackage);
+
 program
   .version('0.1.0')
   .description('A cli built with nodeJS to manage your boilerplate code.  Put on your platemail and get coding!')
@@ -20,4 +22,3 @@ program.parse(process.argv);
 if (!process.argv.slice(2).length) {
   program.outputHelp();
 }
-
