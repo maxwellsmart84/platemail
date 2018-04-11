@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "commander": "^2.15.1",
+    "figlet": "^1.2.0",
     "inquirer": "^5.2.0",
     "request": "^2.85.0",
     "request-promise": "^4.2.2",
