@@ -1,18 +1,7 @@
 import sh from 'shelljs';
 import fs from 'fs';
 import inquirer from 'inquirer';
-// async function editPackageJson(package) {
 
-// }
-
-// async function getPackage(opts = {}) {
-//   if (opts.type === 'node.express') {
-//     await sh.exec('git clone https://github.com/maxwellsmart84/nodeApiPlate.git');
-//   }
-//   return console.log('WIP');
-//
-
-// eslint-disable-next-line
 export async function buildPackage(dir, options) {
   const { nodeExpress, nodeSql, nodeNosql, nodeCli, } = options;
   let repo;
