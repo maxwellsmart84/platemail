@@ -14,12 +14,11 @@ import inquirer from 'inquirer';
 
 // eslint-disable-next-line
 export async function buildPackage(dir, options) {
-  console.log(options);
   const { nodeExpress, nodeSql, nodeNosql, nodeCli, } = options;
   let repo;
-  const answers = await promptUserInformation();
-  const cleanName = answers.name.toString().trim();
-  const path = dir ? `${dir}/${cleanName}` : `./${cleanName}`;
+  const { name, author, version, } = await promptUserInformation();
+  const cleanName = name.toString().trim();
+  const path = dir ? `${dir}/${cleanName}` : `${cleanName}`;
 
   if (nodeExpress) repo = 'https://github.com/maxwellsmart84/nodeApiPlate.git';
   if (nodeSql) repo = '';
@@ -27,20 +26,17 @@ export async function buildPackage(dir, options) {
   if (nodeCli) repo = '';
 
   if (!sh.which('git')) {
-    console.log('Sorry, this program requires git, go here for more information https://git-scm.com/book/en/v2/Getting-Started-Installing-Git');
+    console.error('Sorry, this program requires git, go here for more information https://git-scm.com/book/en/v2/Getting-Started-Installing-Git');
   }
-  sh.exec(`git clone ${repo} ${path}`, (data, stdout, stderr) => {
-    if (stderr) {
-      console.error(`Error: ${stderr}`);
-    }
-  });
+  sh.exec(`git clone ${repo} ${path}`);
   sh.cd(path);
   sh.rm('-rf', '.git');
-  sh.exec('git init', (data, stdout, stderr) => {
-    console.log('DATA', data);
-    console.log('STDOUT', stdout);
-    console.log('STDERR', stderr);
-  });
+  sh.exec('git init');
+  editPackageJsonAndInstall(cleanName, author, version);
+  console.log('Installing Dependencies...');
+  sh.exec('npm install');
+  console.log('Finished! Thanks for using Platemail! Happy Coding!');
+  return process.exit(0);
 }
 
 
@@ -75,16 +71,11 @@ async function promptUserInformation() {
 }
 
 
-// function editPackageJson(name, author, version = '1.0.0', path = './package.json') {
-//   const rawData = fs.readFileSync(JSON.parse(path));
-//   const newData = { ...rawData, name, author, version, };
-
-//   fs.writeFile(path, JSON.stringify(newData, null, 2), (err) => {
-//     if (err) {
-//       console.log('cant write file');
-//     }
-//     console.log(`writing to file:${path}`);
-//   });
-//   return null;
-// }
+function editPackageJsonAndInstall(name, author, version = '1.0.0', path = 'package.json') {
+  const rawData = fs.readFileSync(path);
+  const parsedData = JSON.parse(rawData);
+  const newData = { ...parsedData, name, author, version, };
+  const finishedFile = JSON.stringify(newData, null, 2);
+  return fs.writeFileSync(path, finishedFile);
+}
 

@@ -1,1 +1,0 @@
-{"version":3,"sources":["../src/index-list.js"],"names":["console","log"],"mappings":";;AACA;;;;AAEAA,QAAQC,GAAR","sourcesContent":["\nimport commander from 'commander';\n\nconsole.log()"],"file":"index-list.js"}
