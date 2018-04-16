@@ -1,6 +1,7 @@
 import sh from 'shelljs';
 import fs from 'fs';
 import inquirer from 'inquirer';
+import chalk from 'chalk';
 
 export async function buildPackage(dir, options) {
   const { nodeExpress, nodeSql, nodeNosql, nodeCli, } = options;
@@ -15,16 +16,16 @@ export async function buildPackage(dir, options) {
   if (nodeCli) repo = '';
 
   if (!sh.which('git')) {
-    console.error('Sorry, this program requires git, go here for more information https://git-scm.com/book/en/v2/Getting-Started-Installing-Git');
+    console.error(chalk.red.bold('Sorry, this program requires git, go here for more information https://git-scm.com/book/en/v2/Getting-Started-Installing-Git'));
   }
   sh.exec(`git clone ${repo} ${path}`);
   sh.cd(path);
   sh.rm('-rf', '.git');
   sh.exec('git init');
   editPackageJsonAndInstall(cleanName, author, version);
-  console.log('Installing Dependencies...');
+  console.info(chalk.yellow.bold('Installing Dependencies...'));
   sh.exec('npm install');
-  console.log('Finished! Thanks for using Platemail! Happy Coding!');
+  console.info(chalk.green.bold('Finished! Thanks for using Platemail! Happy Coding!'));
   return process.exit(0);
 }
 
@@ -34,24 +35,24 @@ async function promptUserInformation() {
     {
       type: 'input',
       name: 'name',
-      message: 'What is this project\'s name? (required)',
+      message: chalk.blue('What is this project\'s name?', chalk.red.bold('--required')),
       validate(input) {
         return new Promise((res, rej) => {
           if (typeof input === 'string' && input.length !== 0) res(true);
-          else rej(console.log(' Input required'));
+          else rej(console.log(chalk.red.bold(' Input required')));
         });
       },
     },
     {
       type: 'input',
       name: 'author',
-      message: 'What is the author\'s name?',
+      message: chalk.blue('What is the author\'s name?'),
       default: '',
     },
     {
       type: 'input',
       name: 'version',
-      message: 'What is the version number? (defaults to 1.0.0)',
+      message: chalk.blue('What is the version number?'),
       default: '1.0.0',
     }
   ];

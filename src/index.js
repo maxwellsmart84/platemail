@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import program from 'commander';
+import figlet from 'figlet';
 import { buildPackage } from './buildCommands';
-import { createHeader } from './asciiText';
 
-const header = createHeader();
+const header = figlet.textSync('Platemail', { font: 'ogre', });
 
 program
   .version('0.1.0')
