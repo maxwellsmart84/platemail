@@ -11,7 +11,7 @@ export async function buildPackage(dir, options) {
   const path = dir ? `${dir}/${cleanName}` : `${cleanName}`;
 
   if (nodeExpress) repo = 'https://github.com/maxwellsmart84/nodeApiPlate.git';
-  if (nodeSql) repo = '';
+  if (nodeSql) repo = 'https://github.com/maxwellsmart84/nodeCliPlate.git';
   if (nodeNosql) repo = '';
   if (nodeCli) repo = '';
 
