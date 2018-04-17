@@ -60,6 +60,16 @@ async function promptUserInformation() {
   return answers;
 }
 
+async function promptSqlInformation() {
+  const questions = [
+    {
+      type: 'list',
+      name: 'SQL Engine',
+      choices: ['MySQL', 'PostgreSQL', 'Sqlite3'],
+    }
+  ];
+}
+
 
 function editPackageJsonAndInstall(name, author, version = '1.0.0', path = 'package.json') {
   const rawData = fs.readFileSync(path);
