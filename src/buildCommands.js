@@ -18,15 +18,22 @@ export async function buildPackage(dir, options) {
   if (!sh.which('git')) {
     console.error(chalk.red.bold('Sorry, this program requires git, go here for more information https://git-scm.com/book/en/v2/Getting-Started-Installing-Git'));
   }
-  sh.exec(`git clone ${repo} ${path}`);
-  sh.cd(path);
-  sh.rm('-rf', '.git');
-  sh.exec('git init');
+  if (nodeSql) {
+    await promptSqlInformation();
+  }
+  cloneAndGitInit(repo, path);
   editPackageJsonAndInstall(cleanName, author, version);
   console.info(chalk.yellow.bold('Installing Dependencies...'));
   sh.exec('npm install');
   console.info(chalk.green.bold('Finished! Thanks for using Platemail! Happy Coding!'));
   return process.exit(0);
+}
+
+function cloneAndGitInit(repo, path) {
+  sh.exec(`git clone ${repo} ${path}`);
+  sh.cd(path);
+  sh.rm('-rf', '.git');
+  sh.exec('git init');
 }
 
 
@@ -61,13 +68,81 @@ async function promptUserInformation() {
 }
 
 async function promptSqlInformation() {
-  const questions = [
+  const sqlEngineQuestion = [
     {
       type: 'list',
-      name: 'SQL Engine',
-      choices: ['MySQL', 'PostgreSQL', 'Sqlite3'],
+      name: 'sqlEngine',
+      choices: [
+        {
+          name: 'MySql',
+          value: 'mySql',
+        },
+        {
+          name: 'PostgreSQL',
+          value: 'pg',
+        },
+        {
+          name: 'Sqlite3',
+          value: 'sqlite3',
+        }
+      ],
+      message: chalk.blue('Please select a SQL engine'),
     }
   ];
+  const sqlEngine = await inquirer.prompt(sqlEngineQuestion);
+  if (sqlEngine === 'sqlite3') return { ...await promptSqlite(), sqlEngine, };
+  return promptSqlConectionInformation(sqlEngine);
+  // Edit env file
+}
+
+// TODO: Figure out best way to edit dotEnv files(fs or dotEnv module?...)
+// function editSqlEnvs(data) {
+// }
+
+async function promptSqlConectionInformation(sqlEngine) {
+  const questions = [
+    {
+      type: 'input',
+      name: 'sqlUser',
+      message: chalk.blue('What is the SQL username?'),
+      default: 'root',
+    },
+    {
+      type: 'password',
+      name: 'password',
+      message: chalk.blue('SQL User password'),
+      default: 'password',
+    },
+    {
+      type: 'input',
+      name: 'databaseName',
+      message: chalk.blue('What is the database name?'),
+      default: '',
+    },
+    {
+      type: 'input',
+      name: 'host',
+      message: chalk.blue('What is the host address of your sql server?'),
+      default: '127.0.0.1',
+    }
+  ];
+  const answers = await inquirer.prompt(questions);
+  const valQuestion = {
+    type: 'input',
+    name: 'version',
+    message: chalk.blue('What version of Postgres?'),
+  };
+  if (sqlEngine === 'pg') return { ...answers, ...await inquirer.prompt(valQuestion), };
+  return answers;
+}
+
+function promptSqlite() {
+  const question = {
+    type: 'input',
+    name: 'filepath',
+    message: 'What is the filepath to your sqlite database?',
+  };
+  return inquirer.prompt(question);
 }
 
 
