@@ -19,21 +19,22 @@ export async function buildPackage(dir, options) {
     console.error(chalk.red.bold('Sorry, this program requires git, go here for more information https://git-scm.com/book/en/v2/Getting-Started-Installing-Git'));
   }
   if (nodeSql) {
-    await promptSqlInformation();
+    const sqlAnswers = await promptSqlInformation();
+    console.log(sqlAnswers);
   }
-  cloneAndGitInit(repo, path);
+  try {
+    await sh.exec(`git clone ${repo} ${path}`);
+  } catch (e) {
+    return console.error(`Error cloning repo: ${e}`);
+  }
+  sh.cd(path);
+  sh.rm('-rf', '.git');
+  sh.exec('git init');
   editPackageJsonAndInstall(cleanName, author, version);
   console.info(chalk.yellow.bold('Installing Dependencies...'));
   sh.exec('npm install');
   console.info(chalk.green.bold('Finished! Thanks for using Platemail! Happy Coding!'));
   return process.exit(0);
-}
-
-function cloneAndGitInit(repo, path) {
-  sh.exec(`git clone ${repo} ${path}`);
-  sh.cd(path);
-  sh.rm('-rf', '.git');
-  sh.exec('git init');
 }
 
 
@@ -89,7 +90,7 @@ async function promptSqlInformation() {
       message: chalk.blue('Please select a SQL engine'),
     }
   ];
-  const sqlEngine = await inquirer.prompt(sqlEngineQuestion);
+  const { sqlEngine, } = await inquirer.prompt(sqlEngineQuestion);
   if (sqlEngine === 'sqlite3') return { ...await promptSqlite(), sqlEngine, };
   return promptSqlConectionInformation(sqlEngine);
   // Edit env file
@@ -127,12 +128,14 @@ async function promptSqlConectionInformation(sqlEngine) {
     }
   ];
   const answers = await inquirer.prompt(questions);
-  const valQuestion = {
-    type: 'input',
-    name: 'version',
-    message: chalk.blue('What version of Postgres?'),
-  };
-  if (sqlEngine === 'pg') return { ...answers, ...await inquirer.prompt(valQuestion), };
+  if (sqlEngine === 'pg') {
+    const valQuestion = {
+      type: 'input',
+      name: 'version',
+      message: chalk.blue('What version of Postgres?'),
+    };
+    return { ...answers, ...await inquirer.prompt(valQuestion), };
+  }
   return answers;
 }
 
