@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import program from 'commander';
 import figlet from 'figlet';
-import { buildPackage } from './buildCommands';
+import { buildPackage } from './buildCommands/buildCommands';
 
 const header = figlet.textSync('Platemail', { font: 'ogre', });
 
