@@ -1,16 +1,4 @@
 {
-  "env": {
-    "node": true
-  },
-  "extends": "airbnb-base",
-  "ecmaFeatures": {
-    "ecmaScript": 8,
-    "modules": true
-  },
-  "rules": {
-    "no-use-before-define": [ 2, { "functions": false } ],
-    "object-curly-newline": [2, { "multiline": true }],
-    "comma-dangle": [2, {"objects": "always-multiline"}],
-    "import/prefer-default-export": false
-  }
+  "extends": "maxwell"
 }
+
