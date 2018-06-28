@@ -8,75 +8,85 @@ export async function promptSqlInformation() {
       name: 'sqlEngine',
       choices: [
         {
-          name: 'MySql',
-          value: 'mySql',
-        },
-        {
           name: 'PostgreSQL',
           value: 'pg',
         },
         {
-          name: 'Sqlite3',
+          name: 'MySQL',
+          value: 'mysql',
+        },
+        {
+          name: 'MySQL2',
+          value: 'mysql2',
+        },
+        {
+          name: 'mariaSQL',
+          value: 'mariasql',
+        },
+        {
+          name: 'MSSQL',
+          value: 'mssql',
+        },
+        {
+          name: 'SQLite3',
           value: 'sqlite3',
+        },
+        {
+          name: 'Oracle',
+          value: 'oracle',
         }
       ],
       message: chalk.blue('Please select a SQL engine'),
     }
   ];
-  const { sqlEngine, } = await inquirer.prompt(sqlEngineQuestion);
-  if (sqlEngine === 'sqlite3') return { ...await promptSqlite(), sqlEngine, };
-  return promptSqlConectionInformation(sqlEngine);
-  // Edit env file
+  const { sqlEngine } = await inquirer.prompt(sqlEngineQuestion);
+  if (sqlEngine == 'sqlite3') {
+    const { dbName } = await promptSqlite();
+    return { dbName, sqlEngine, dbHost: `./db/${dbName}.sqlite` };
+  }
+  return { sqlEngine, ...await promptSqlConectionInformation() };
 }
 
 // TODO: Figure out best way to edit dotEnv files(fs or dotEnv module?...)
 // function editSqlEnvs(data) {
 // }
 
-async function promptSqlConectionInformation(sqlEngine) {
+async function promptSqlConectionInformation() {
   const questions = [
     {
       type: 'input',
-      name: 'sqlUser',
-      message: chalk.blue('What is the SQL username?'),
+      name: 'dbUser',
+      message: chalk.green('What is the SQL username?'),
       default: 'root',
     },
     {
       type: 'password',
-      name: 'password',
-      message: chalk.blue('SQL User password'),
+      name: 'dbPass',
+      message: chalk.green('SQL User password'),
       default: 'password',
     },
     {
       type: 'input',
-      name: 'databaseName',
-      message: chalk.blue('What is the database name?'),
-      default: '',
+      name: 'dbName',
+      message: chalk.green('What is the database name?'),
+      default: 'TestDB',
     },
     {
       type: 'input',
-      name: 'host',
-      message: chalk.blue('What is the host address of your sql server?'),
+      name: 'dbHost',
+      message: chalk.green('What is the host address of your sql server?'),
       default: '127.0.0.1',
     }
   ];
   const answers = await inquirer.prompt(questions);
-  if (sqlEngine === 'pg') {
-    const valQuestion = {
-      type: 'input',
-      name: 'version',
-      message: chalk.blue('What version of Postgres?'),
-    };
-    return { ...answers, ...await inquirer.prompt(valQuestion), };
-  }
   return answers;
 }
 
 function promptSqlite() {
   const question = {
     type: 'input',
-    name: 'filepath',
-    message: 'What is the filepath to your sqlite database?',
+    name: 'dbName',
+    message: chalk.orange('What is the name of your sqlite database?'),
   };
   return inquirer.prompt(question);
 }
