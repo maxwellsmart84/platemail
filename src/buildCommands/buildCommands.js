@@ -82,7 +82,7 @@ function editPackageJsonAndInstall({ name = '', author = '', version = '1.0.0' }
 
 function editEnvFile({ sqlEngine = '', dbName = '', dbHost = '', dbUser = '', dbPass = '' } = {}) {
   const envFile = `
-  PORT=8080,
+  PORT=8080
   SQL_CLIENT=${sqlEngine}
   DB_HOST=${dbHost}
   DB_USER=${dbUser}
