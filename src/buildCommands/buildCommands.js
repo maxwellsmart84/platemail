@@ -2,7 +2,6 @@ import sh from 'shelljs';
 import fs, { writeFileSync } from 'fs';
 import inquirer from 'inquirer';
 import chalk from 'chalk';
-import dotenv from 'dotenv';
 import { promptSqlInformation } from './sqlCommands';
 
 export async function buildPackage(dir, options) {
@@ -14,9 +13,9 @@ export async function buildPackage(dir, options) {
   const path = dir ? `${dir}/${cleanName}` : `${cleanName}`;
 
   if (nodeExpress) repo = 'https://github.com/maxwellsmart84/nodeApiPlate.git';
-  if (nodeSql) repo = 'https://github.com/maxwellsmart84/nodeCliPlate.git';
+  if (nodeSql) repo = 'https://github.com/maxwellsmart84/nodeApiSql.git';
   if (nodeNosql) repo = '';
-  if (nodeCli) repo = '';
+  if (nodeCli) repo = 'https://github.com/maxwellsmart84/nodeCliPlate.git';
 
   if (!sh.which('git')) {
     console.error(chalk.red.bold('Sorry, this program requires git, go here for more information https://git-scm.com/book/en/v2/Getting-Started-Installing-Git'));
@@ -33,10 +32,11 @@ export async function buildPackage(dir, options) {
   sh.cd(path);
   sh.rm('-rf', '.git');
   sh.exec('git init');
-  editPackageJsonAndInstall({ name: cleanName, author, version, sqlEngine });
-  editEnvFile({ sqlEngine, dbPass, dbName, dbHost, dbUser });
+  editPackageJsonAndInstall({ name: cleanName, author, version });
+  editEnvFile({ dbPass, dbName, dbHost, dbUser });
   console.info(chalk.yellow.bold('Installing Dependencies...'));
-  sh.exec('npm install');
+  sh.exec('npm install', { silent: true });
+  sh.exec(`npm install ${sqlEngine} --save`, { silent: true });
   console.info(chalk.green.bold('Finished! Thanks for using Platemail! Happy Coding!'));
   return process.exit(0);
 }
@@ -72,18 +72,10 @@ async function promptUserInformation() {
   return answers;
 }
 
-function editPackageJsonAndInstall({ name = '', author = '', version = '1.0.0', sqlEngine = undefined } = {}) {
+function editPackageJsonAndInstall({ name = '', author = '', version = '1.0.0' } = {}) {
   const rawData = fs.readFileSync('package.json');
   const packageJSON = JSON.parse(rawData);
-  // filter out other engines
-  let { dependencies } = packageJSON;
-  const dependencyKeys = Object.keys(dependencies);
-  const newDependencies = [...sqlEngine, 'express', 'bodyparser', 'dotenv', 'knex'];
-
-  dependencies = newDependencies
-    .reduce((obj, key) => ({ ...obj, [key]: dependencyKeys[key] }), {});
-
-  const newData = { ...packageJSON, name, author, version, dependencies };
+  const newData = { ...packageJSON, name, author, version };
   const finishedFile = JSON.stringify(newData, null, 2);
   return fs.writeFileSync('package.json', finishedFile);
 }

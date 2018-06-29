@@ -40,7 +40,7 @@ export async function promptSqlInformation() {
     }
   ];
   const { sqlEngine } = await inquirer.prompt(sqlEngineQuestion);
-  if (sqlEngine == 'sqlite3') {
+  if (sqlEngine === 'sqlite3') {
     const { dbName } = await promptSqlite();
     return { dbName, sqlEngine, dbHost: `./db/${dbName}.sqlite` };
   }
