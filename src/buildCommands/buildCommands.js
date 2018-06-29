@@ -33,7 +33,7 @@ export async function buildPackage(dir, options) {
   sh.rm('-rf', '.git');
   sh.exec('git init');
   editPackageJsonAndInstall({ name: cleanName, author, version });
-  editEnvFile({ dbPass, dbName, dbHost, dbUser });
+  editEnvFile({ dbPass, dbName, dbHost, dbUser, sqlEngine });
   console.info(chalk.yellow.bold('Installing Dependencies...'));
   sh.exec('npm install', { silent: true });
   sh.exec(`npm install ${sqlEngine} --save`, { silent: true });
@@ -80,7 +80,7 @@ function editPackageJsonAndInstall({ name = '', author = '', version = '1.0.0' }
   return fs.writeFileSync('package.json', finishedFile);
 }
 
-function editEnvFile({ sqlEngine = '', dbName = '', dbHost = '', dbUser = '', dbPass = '' } = {}) {
+function editEnvFile({ sqlEngine = '', dbName = '', dbHost = '', dbUser = '', dbPass = '',  sqlEngine = ''} = {}) {
   const envFile = `
   PORT=8080,
   SQL_CLIENT=${sqlEngine}
