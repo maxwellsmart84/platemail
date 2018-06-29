@@ -80,7 +80,7 @@ function editPackageJsonAndInstall({ name = '', author = '', version = '1.0.0' }
   return fs.writeFileSync('package.json', finishedFile);
 }
 
-function editEnvFile({ sqlEngine = '', dbName = '', dbHost = '', dbUser = '', dbPass = '',  sqlEngine = ''} = {}) {
+function editEnvFile({ sqlEngine = '', dbName = '', dbHost = '', dbUser = '', dbPass = '' } = {}) {
   const envFile = `
   PORT=8080,
   SQL_CLIENT=${sqlEngine}
