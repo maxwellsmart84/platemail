@@ -32,13 +32,13 @@ export async function buildPackage(dir, options) {
   sh.rm('-rf', '.git');
   sh.exec('git init');
   editPackageJsonAndInstall({ name: cleanName, author, version });
+  console.info(chalk.yellow.bold('Installing Dependencies...'));
+  sh.exec('npm install', { silent: true });
   if (nodeSql) {
     const { sqlEngine, dbName, dbHost, dbUser, dbPass } = sqlInfo;
     editEnvFile({ dbPass, dbName, dbHost, dbUser, sqlEngine });
+    sh.exec(`npm install ${sqlEngine} --save`, { silent: true });
   }
-  console.info(chalk.yellow.bold('Installing Dependencies...'));
-  sh.exec('npm install', { silent: true });
-  sh.exec(`npm install ${sqlEngine} --save`, { silent: true });
   console.info(chalk.green.bold('Finished! Thanks for using Platemail! Happy Coding!'));
   return process.exit(0);
 }
