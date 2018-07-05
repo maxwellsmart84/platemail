@@ -28,12 +28,14 @@ export async function buildPackage(dir, options) {
   } catch (e) {
     return console.error(`Error cloning repo: ${e}`);
   }
-  const { sqlEngine, dbName, dbHost, dbUser, dbPass } = sqlInfo;
   sh.cd(path);
   sh.rm('-rf', '.git');
   sh.exec('git init');
   editPackageJsonAndInstall({ name: cleanName, author, version });
-  editEnvFile({ dbPass, dbName, dbHost, dbUser, sqlEngine });
+  if (nodeSql) {
+    const { sqlEngine, dbName, dbHost, dbUser, dbPass } = sqlInfo;
+    editEnvFile({ dbPass, dbName, dbHost, dbUser, sqlEngine });
+  }
   console.info(chalk.yellow.bold('Installing Dependencies...'));
   sh.exec('npm install', { silent: true });
   sh.exec(`npm install ${sqlEngine} --save`, { silent: true });
