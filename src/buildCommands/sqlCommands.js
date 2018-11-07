@@ -44,25 +44,21 @@ export async function promptSqlInformation() {
     const { dbName } = await promptSqlite();
     return { dbName, sqlEngine, dbHost: `./db/${dbName}.sqlite` };
   }
-  return { sqlEngine, ...await promptSqlConectionInformation() };
+  return { sqlEngine, ...await promptDBConnectionInformation() };
 }
 
-// TODO: Figure out best way to edit dotEnv files(fs or dotEnv module?...)
-// function editSqlEnvs(data) {
-// }
-
-async function promptSqlConectionInformation() {
+export async function promptDBConnectionInformation() {
   const questions = [
     {
       type: 'input',
       name: 'dbUser',
-      message: chalk.green('What is the SQL username?'),
+      message: chalk.green('What is the database username?'),
       default: 'root',
     },
     {
       type: 'password',
       name: 'dbPass',
-      message: chalk.green('SQL User password'),
+      message: chalk.green('What is the database password'),
       default: 'password',
     },
     {
@@ -74,7 +70,7 @@ async function promptSqlConectionInformation() {
     {
       type: 'input',
       name: 'dbHost',
-      message: chalk.green('What is the host address of your sql server?'),
+      message: chalk.green('What is the host address of your database server?'),
       default: '127.0.0.1',
     }
   ];
@@ -86,7 +82,7 @@ function promptSqlite() {
   const question = {
     type: 'input',
     name: 'dbName',
-    message: chalk.orange('What is the name of your sqlite database?'),
+    message: chalk.orange('What is the name of your SQLite database?'),
   };
   return inquirer.prompt(question);
 }

@@ -3,18 +3,20 @@ import fs, { writeFileSync } from 'fs';
 import inquirer from 'inquirer';
 import chalk from 'chalk';
 import { promptSqlInformation } from './sqlCommands';
+import { promptNoSqlInformation } from './noSqlCommands';
 
 export async function buildPackage(dir, options) {
   let repo;
   let sqlInfo;
-  const { nodeExpress, nodeSql, nodeNosql, nodeCli } = options;
+  let noSqlInfo;
+  const { nodeExpress, nodeSql, nodeNoSql, nodeCli } = options;
   const { name, author, version } = await promptUserInformation();
   const cleanName = name.toString().trim();
   const path = dir ? `${dir}/${cleanName}` : `${cleanName}`;
 
   if (nodeExpress) repo = 'https://github.com/maxwellsmart84/nodeApiPlate.git';
   if (nodeSql) repo = 'https://github.com/maxwellsmart84/nodeApiSql.git';
-  if (nodeNosql) repo = '';
+  if (nodeNoSql) repo = '';
   if (nodeCli) repo = 'https://github.com/maxwellsmart84/nodeCliPlate.git';
 
   if (!sh.which('git')) {
@@ -22,6 +24,9 @@ export async function buildPackage(dir, options) {
   }
   if (nodeSql) {
     sqlInfo = await promptSqlInformation();
+  }
+  if (nodeNoSql) {
+    noSqlInfo = await promptNoSqlInformation();
   }
   try {
     await sh.exec(`git clone ${repo} ${path}`);
@@ -34,6 +39,11 @@ export async function buildPackage(dir, options) {
   editPackageJsonAndInstall({ name: cleanName, author, version });
   console.info(chalk.yellow.bold('Installing Dependencies...'));
   sh.exec('npm install', { silent: true });
+  if (nodeNoSql) {
+    const { sqlEngine, dbName, dbHost, dbUser, dbPass } = noSqlInfo;
+    editEnvFile({ dbPass, dbName, dbHost, dbUser, sqlEngine });
+    sh.exec(`npm install ${sqlEngine} --save`, { silent: true });
+  }
   if (nodeSql) {
     const { sqlEngine, dbName, dbHost, dbUser, dbPass } = sqlInfo;
     editEnvFile({ dbPass, dbName, dbHost, dbUser, sqlEngine });
@@ -93,3 +103,4 @@ function editEnvFile({ sqlEngine = '', dbName = '', dbHost = '', dbUser = '', db
 
   return writeFileSync('./.env', envFile);
 }
+
